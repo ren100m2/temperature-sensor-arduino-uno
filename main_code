@@ -1,0 +1,50 @@
+#include <Wire.h>
+#include <Adafruit_MLX90614.h>
+
+Adafruit_MLX90614 mlx = Adafruit_MLX90614();
+
+const int redLED = 2;
+const int greenLED = 3;
+const int blueLED = 4;
+
+void setup() {
+  pinMode(redLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(blueLED, OUTPUT);
+
+  Serial.begin(9600);
+
+  mlx.begin();
+}
+
+void loop() {
+  float temperature = mlx.readObjectTempC();
+
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+
+  if (temperature > 90) {
+    // Temperature over 90 degrees Celsius - blinking red LED
+    blinkLED(redLED, 200);
+  } else if (temperature >= 30 && temperature <= 90) {
+    // Temperature between 30 and 90 degrees Celsius - green LED is on
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(redLED, LOW);
+    digitalWrite(blueLED, LOW);
+  } else {
+    // Temperature under 30 degrees Celsius - blue LED is on
+    digitalWrite(blueLED, HIGH);
+    digitalWrite(redLED, LOW);
+    digitalWrite(greenLED, LOW);
+  }
+
+  delay(1000);  // Adjust the delay as needed
+}
+
+void blinkLED(int pin, int duration) {
+  digitalWrite(pin, HIGH);
+  delay(duration);
+  digitalWrite(pin, LOW);
+  delay(duration);
+}
